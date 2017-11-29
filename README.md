@@ -8,3 +8,5 @@ You should then clone your fork of the repository, so you have your own copy and
 
 To run the code you should should use the file SI507F17_finalproject.py
 To test the code you should use the file SI507F17_finalproject_tests.py
+
+This code takes music from Pandora playlists in csv files and uploads them to new Spotify playlists. Two database tables will be created: one for Songs and one for Artists.

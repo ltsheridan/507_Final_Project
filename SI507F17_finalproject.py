@@ -6,9 +6,9 @@ import spotipy
 # import spotify_data
 import requests
 import unittest
-# import psycopg2
-# import psycopg2.extras
-# from psycopg2 import sql
+import psycopg2
+import psycopg2.extras
+from psycopg2 import sql
 from config import *
 
 #Links to access Spotify
@@ -59,83 +59,98 @@ def save_cache(token_dict):
         token_json = json.dumps(token_dict)
         f.write(token_json)
 
+Spotify_data = makeSpotifyRequest('https://api.spotify.com/v1/search')
+#use https://developer.spotify.com/web-api/search-item/ to search for specific artist
+#
+# request1=makeSpotifyRequest('https://api.spotify.com/v1/search', "Head and the Heart")
+# response_diction2=json.loads(data.text)
+# print(response_diction2)
+
 data = makeSpotifyRequest('https://api.spotify.com/v1/artists/0n94vC3S9c3mb2HyNAOcjg/related-artists')
 response_diction = json.loads(data.text)
 # print(json.dumps(response_diction, indent=2))
 
-# related_artists = 'https://api.spotify.com/v1/artists/{0}/related-artists.format(artist_id)
-# head_and_the_heart = makeSpotifyRequest(related_artists params={'head and the heart'})
-# related_artists_dict = head_and_the_heart.json()
-# print(related_artists_dict)
 
-#CLASS
 
-class SpotifyData(object):
-    def __init__(self, artist_list, rank_list, url_list):
-        self.artists=artist_list
-        self.popularity=rank_list
-        self.images=url_list
+#CLASS holds artist and list of related artists
 
-    def ArtistNameList(self):
-        related_artists=[]
-        for item in response_diction['artists']:
-            related_artists.append(item['name'])
-        return related_artists.sort()
+class SpotifyArtist(object):
+    def __init__(self, artist_name, popularity, image_url):
+        self.artist_name=artist_name
+        self.popularity=popularity
+        self.image_url=image_url
 
     def __repr__(self):
-        return "Image URL: {}".format(self.images)
+        return "This artist {} has a popularity score of {} and the image url: {}".format(self.artist_name, self.popularity, self.image_url)
 
     def __contains__(self, x):
-        return x in self.artists
+        return x in self.artist_name
 
-# related_artists=[]
+related_artists_obj=[]
+for item in response_diction['artists']:
+    artist_object=SpotifyArtist((item['name']), (item['popularity']),(item['images'][2]['url']))
+    related_artists_obj.append(artist_object)
+
+# print(related_artists_obj)
+
+# artist_popularity=[]
 # for item in response_diction['artists']:
-#     related_artists.append(item['name'])
-# related_artists.sort()
-# print(related)
-
-artist_popularity=[]
-for item in response_diction['artists']:
-    artist_popularity.append(item['popularity'])
-# print(artist_popularity)
-
-image_url=[]
-for item in response_diction['artists']:
-    image_url.append(item['images'][2]['url'])
+#     artist_popularity.append(item['popularity'])
+# # print(artist_popularity)
+#
+# image_url=[]
+# for item in response_diction['artists']:
+#     image_url.append(item['images'][2]['url'])
 # print(image_url)
 
-# my_data=SpotifyData(related_artists, artist_popularity, image_url)
-# print(my_data)
+
+
 
 
 #Setting up the database
-# db_connection, db_cursor = None, None
+db_connection, db_cursor = None, None
 
-# # def get_connection_and_cursor():
-#     global db_connection, db_cursor
-#     if not db_connection:
-#         try:
-#             if db_password != "":
-#                 db_connection = psycopg2.connect("dbname='{0}' user='{1}' password='{2}'".format(db_name, db_user, db_password))
-#                 print("Success connecting to database")
-#             else:
-#                 db_connection = psycopg2.connect("dbname='{0}' user='{1}'".format(db_name, db_user))
-#         except:
-#             print("Unable to connect to the database. Check server and credentials.")
-#             sys.exit(1) # Stop running program if there's no db connection.
-#
-#     if not db_cursor:
-#         db_cursor = db_connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-#
-#     return db_connection, db_cursor
+def get_connection_and_cursor():
+    global db_connection, db_cursor
+    if not db_connection:
+        try:
+            if db_password != "":
+                db_connection = psycopg2.connect("dbname='{0}' user='{1}' password='{2}'".format(db_name, db_user, db_password))
+                print("Success connecting to database")
+            else:
+                db_connection = psycopg2.connect("dbname='{0}' user='{1}'".format(db_name, db_user))
+        except:
+            print("Unable to connect to the database. Check server and credentials.")
+            sys.exit(1) # Stop running program if there's no db connection.
 
-# def setup_database():
-    # conn, db_cursor = get_connection_and_cursor()
-    #
-    # db_cursor.execute("DROP TABLE IF EXISTS Artists")
-    # db_cursor.execute("DROP TABLE IF EXISTS Artist Popularity")
-    #
-    #
-    # db_cursor.execute("CREATE TABLE Artists(ID SERIAL PRIMARY KEY, Name VARCHAR (40) UNIQUE)")
-    # db_cursor.execute("CREATE TABLE Artist Popularity(ID SERIAL PRIMARY KEY, Name VARCHAR(128) UNIQUE, Type VARCHAR(128), Location VARCHAR(255), Description TEXT)")
-    # conn.commit()
+    if not db_cursor:
+        db_cursor = db_connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+    return db_connection, db_cursor
+
+
+# Code functions to create tables and database setup
+
+def setup_database():
+    conn, db_cursor = get_connection_and_cursor()
+
+    db_cursor.execute("DROP TABLE IF EXISTS Artists")
+    db_cursor.execute("DROP TABLE IF EXISTS Artists Popularity")
+    db_cursor.execute("DROP TABLE IF EXISTS Image URL")
+
+
+    db_cursor.execute("CREATE TABLE Artists(ID SERIAL PRIMARY KEY, Artist VARCHAR (50) UNIQUE)")
+    db_cursor.execute("CREATE TABLE Artists Popularity(ID SERIAL PRIMARY KEY, Artist VARCHAR(50) UNIQUE, Artist_ID INTEGER REFERENCES Artist (ID), Artists Popularity INTEGER")
+    db_cursor.execute("CREATE TABLE Image URL(ID SERIAL PRIMARY KEY, Artist VARCHAR (50) UNIQUE, Image URL VARCHAR (255))")
+    conn.commit()
+
+# Code to insert data into the database here.
+
+def insert_data(artist_name, popularity, url):
+    sql = "INSERT INTO Artists(Artist) VALUES(%s)"
+    db_cursor.execute(sql,(Artist))
+    db_connection.commit()
+
+# Code to invoke functions
+get_connection_and_cursor()
+setup_database()

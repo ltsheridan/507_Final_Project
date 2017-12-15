@@ -93,7 +93,7 @@ related_artists_obj=[]
 for item in response_diction['artists']:
     artist_object=SpotifyArtist((item['name']), (item['popularity']),(item['images'][2]['url']))
     related_artists_obj.append(artist_object)
-# print(related_artists_obj)
+print(related_artists_obj)
 
 # artist_popularity=[]
 # for item in response_diction['artists']:
@@ -189,18 +189,26 @@ trace1 = Scatter(
 )
 data = Data([trace1])
 
-py.plot(data, filename = 'basic-line')
+# py.plot(data, filename = 'basic-line')
 
 #Unittests using a Test Variable
-test_spotify=SpotifyArtist('The Lumineers', 81, 'https://i.scdn.co/image/669c3d60be85953c1488891a0aa4e2056809f427')
+# test_spotify=SpotifyArtist('The Lumineers', 81, 'https://i.scdn.co/image/669c3d60be85953c1488891a0aa4e2056809f427')
 
 class testSpotify(unittest.TestCase):
-  def test_ArtistName(self):
-    self.assertEqual(test_spotify.artist_name(),'The Lumineers')
-#
-#   def test_getArticleHeadline(self):
-#     self.assertEqual(test_article.getArticleHeadline(), "A New Culprit in Lyme Disease", "Test that headline is returned")
-#
+    def setUp(self):
+        # spotify_url = 'https://api.spotify.com/v1/artists/0n94vC3S9c3mb2HyNAOcjg/related-artists'
+        # response = json.loads(spotify_url.text)
+        # response_diction=json.dumps(response, indent=2)
+        self.artist_name = SpotifyArtist('The Lumineers', 65, 'https://i.scdn.co/image/a003cf41e0b0007dad99efdae7779100ff1eff3e')
+        # self.popularity = SpotifyArtist(65)
+        # self.image_url = SpotifyArtist('https://i.scdn.co/image/a003cf41e0b0007dad99efdae7779100ff1eff3e')
+
+    def test_1(self):
+        self.assertEqual((self.artist_name), 'The Lumineers', 'Test type string is returned')
+
+  # def test_getArt(self):
+    # self.assertEqual(test_article.getArticleHeadline(), "A New Culprit in Lyme Disease", "Test that headline is returned")
+
 #   def test_getArticleAbstract(self):
 #     self.assertEqual(test_article.getArticleAbstract(), "Study in journal Lancet Infectious Disease reports discovery of new species of tick-borne bacteria that causes Lyme disease; new species, provisionally named Borrelia mayonii, causes roughly same symptoms as Borrelia burgdorferi, previously only species known to cause Lyme disease in North America.", "Test proper format of article abstract")
 #
@@ -220,4 +228,5 @@ class testSpotify(unittest.TestCase):
 #   def test_getRetweetCount(self):
 #     self.assertEqual(test_tweets.getRetweetCount(), 2, "Testing that Retweet Count returns a number.")
 
-unittest.main(verbosity=2)
+if __name__ == "__main__":
+    unittest.main(verbosity=2)

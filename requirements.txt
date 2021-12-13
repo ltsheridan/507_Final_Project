@@ -17,7 +17,7 @@ idna==2.6
 ipython-genutils==0.2.0
 jsonschema==2.6.0
 jupyter-core==4.4.0
-lxml==4.1.1
+lxml==4.6.5
 nbformat==4.4.0
 oauthlib==2.0.6
 pathtools==0.1.2

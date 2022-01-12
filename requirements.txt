@@ -10,7 +10,7 @@ cryptography==2.1.4
 cssselect==1.0.1
 cssutils==1.0.2
 decorator==4.1.2
-dnslib==0.9.7
+dnslib==0.9.17
 html2text==2017.10.4
 html5lib==1.0b10
 idna==2.6
